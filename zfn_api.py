@@ -1,4 +1,5 @@
 import base64
+import getpass
 import binascii
 import json
 import re
@@ -43,8 +44,8 @@ class Client:
         Client.raspisanie = self.raspisanie
         Client.ignore_type = self.ignore_type
 
-        self.key_url = urljoin(self.base_url, "xtgl/login_getPublicKey.html")
-        self.login_url = urljoin(self.base_url, "xtgl/login_slogin.html")
+        self.key_url = urljoin(self.base_url, "jwglxt/xtgl/login_getPublicKey.html")
+        self.login_url = urljoin(self.base_url, "jwglxt/xtgl/login_slogin.html")
         self.kaptcha_url = urljoin(self.base_url, "kaptcha")
         self.headers = requests.utils.default_headers()
         self.headers["Referer"] = self.login_url
@@ -67,7 +68,7 @@ class Client:
                 self.login_url, headers=self.headers, timeout=self.timeout
             )
             if req_csrf.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "登录教务系统挂了"}
             # 获取csrf_token
             doc = pq(req_csrf.text)
             csrf_token = doc("#csrftoken").attr("value")
@@ -157,7 +158,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_login.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "验证码教务系统挂了"}
             # 请求登录
             doc = pq(req_login.text)
             tips = doc("p#tips")
@@ -201,7 +202,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_info.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "个人信息教务系统挂了"}
             doc = pq(req_info.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -251,7 +252,7 @@ class Client:
                 url, headers=self.headers, cookies=self.cookies, timeout=self.timeout
             )
             if req_info.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "获取个人教务系统挂了"}
             doc = pq(req_info.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -408,7 +409,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_grade.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "成绩教务系统挂了"}
             doc = pq(req_grade.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -483,7 +484,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_grade.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "考试教务系统挂了"}
             doc = pq(req_grade.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -534,7 +535,7 @@ class Client:
 
     def get_schedule(self, year: int, term: int):
         """获取课程表信息"""
-        url = urljoin(self.base_url, "kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
+        url = urljoin(self.base_url, "jwglxt/kbcx/xskbcx_cxXsKb.html?gnmkdm=N2151")
         temp_term = term
         term = term**2 * 3
         data = {"xnm": str(year), "xqm": str(term)}
@@ -547,7 +548,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_schedule.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "课程表教务系统挂了"}
             doc = pq(req_schedule.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -617,7 +618,7 @@ class Client:
                 stream=True,
             )
             if req_main.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "学业生涯教务系统挂了"}
             doc_main = pq(req_main.text)
             if doc_main("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -720,7 +721,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_view.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "学业教务系统挂了"}
             doc = pq(req_view.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -860,7 +861,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_policy.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "课表教务系统挂了"}
             doc = pq(req_policy.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -916,7 +917,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_notification.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "通知教务系统挂了"}
             doc = pq(req_notification.text)
             if doc("h5").text() == "用户登录" or "错误" in doc("title").text():
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -957,7 +958,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_selected.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "已选教务系统挂了"}
             doc = pq(req_selected.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -1031,7 +1032,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_selected.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "已选2教务系统挂了"}
             doc = pq(req_selected.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -1086,7 +1087,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_head_data.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "板块选课教务系统挂了"}
             doc = pq(req_head_data.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -1282,7 +1283,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_select.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "选课教务系统挂了"}
             doc = pq(req_select.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -1322,7 +1323,7 @@ class Client:
                 timeout=self.timeout,
             )
             if req_cancel.status_code != 200:
-                return {"code": 2333, "msg": "教务系统挂了"}
+                return {"code": 2333, "msg": "取消选课教务系统挂了"}
             doc = pq(req_cancel.text)
             if doc("h5").text() == "用户登录":
                 return {"code": 1006, "msg": "未登录或已过期，请重新登录"}
@@ -1629,9 +1630,11 @@ if __name__ == "__main__":
     import sys
     import os
 
-    base_url = "https://xxxx.xxx.edu.cn"  # 教务系统URL
-    sid = "123456"  # 学号
-    password = "abc654321"  # 密码
+    base_url = "https://jwgl.nwu.edu.cn/jwglxt"  # 教务系统URL
+    sid = ""  # 学号
+    password = ""  # 密码
+    sid = input("请输入学号：")
+    password = getpass.getpass("请输入密码：")
     lgn_cookies = (
         {
             # "insert_cookie": "",
@@ -1641,7 +1644,7 @@ if __name__ == "__main__":
         if False
         else None
     )  # cookies登录，调整成True使用cookies登录，反之使用密码登录
-    test_year = 2022  # 查询学年
+    test_year = 2025  # 查询学年
     test_term = 2  # 查询学期（1-上|2-下）
 
     # 初始化
@@ -1698,7 +1701,7 @@ if __name__ == "__main__":
     # result = lgn.get_gpa()
 
     """ 获取课程表 """
-    # result = lgn.get_schedule(test_year, test_term)
+    result = lgn.get_schedule(test_year, test_term)
 
     """ 获取成绩 """
     # result = lgn.get_grade(test_year, test_term)
